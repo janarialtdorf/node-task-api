@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const filePath = path.resolve("data/tasks.json");
+const tasksFilePath = process.env.TASKS_FILE || "data/tasks.json";
+const filePath = path.resolve(tasksFilePath);
 
 export async function readTasks() {
   try {
