@@ -4,6 +4,12 @@ import { getAllTasks, getTaskById } from "./tasks.js";
 const app = express();
 app.use(express.json());
 
+// Request logging
+app.use((req, res, next) => {
+  console.log(`req.method: ${req.method}, req.url: ${req.url}`);
+  next();
+});
+
 let tasks = [
   { id: 1, title: "Õpi Node.js mooduleid", completed: true },
   { id: 2, title: "Ehita Express API", completed: false },
@@ -110,6 +116,17 @@ app.delete("/api/tasks/:id", (req, res) => {
 
   tasks.splice(taskIndex, 1);
   res.status(204).send();
+});
+
+// 404 Catch-all -> Käivitub ainult siis, kui ükski ülemine marsruut ei vastanud päringule
+app.use((req, res) => {
+  res.status(404).json({ error: "API endpoint not found" });
+});
+
+// 500 Error handler
+app.use((err, req, res, next) => {
+  console.error("Internal server error:", err.message);
+  res.status(500).json({ error: "Internal server error" });
 });
 
 export default app;
