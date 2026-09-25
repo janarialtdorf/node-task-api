@@ -35,7 +35,7 @@ export async function readTasks() {
   return loadTasks();
 }
 
-export async function writeTasks(tasks) {
-  const resolvedPath = path.resolve(defaultFilePath);
+export async function writeTasks(tasks, filePath = defaultFilePath) {
+  const resolvedPath = path.resolve(filePath);
   await fs.writeFile(resolvedPath, JSON.stringify(tasks, null, 2), "utf-8");
 }
