@@ -1,4 +1,3 @@
-// src/app.js
 import express from "express";
 import { getAllTasks, getTaskById } from "./tasks.js";
 
@@ -70,6 +69,47 @@ app.post("/api/tasks", (req, res) => {
 
   tasks.push(newTask);
   res.status(201).json(newTask);
+});
+
+// PATCH /api/tasks/:id
+app.patch("/api/tasks/:id", (req, res) => {
+  const task = getTaskById(tasks, req.params.id);
+
+  if (!task) {
+    return res.status(404).json({ error: "Task not found" });
+  }
+  const { title, completed } = req.body;
+
+  // Title validation
+  if (title !== undefined) {
+    if (typeof title !== "string" || title.trim() === "") {
+      return res.status(400).json({ error: "Title cannot be empty" });
+    }
+    task.title = title.trim();
+  }
+
+  // Completed validation
+  if (completed !== undefined) {
+    if (typeof completed !== "boolean") {
+      return res
+        .status(400)
+        .json({ error: "Completed must be a boolean value (true/false)" });
+    }
+    task.completed = completed;
+  }
+  res.status(200).json(task);
+});
+
+// DELETE /api/tasks/:id
+app.delete("/api/tasks/:id", (req, res) => {
+  const taskIndex = tasks.findIndex((t) => t.id === Number(req.params.id));
+
+  if (taskIndex === -1) {
+    return res.status(404).json({ error: "Task not found" });
+  }
+
+  tasks.splice(taskIndex, 1);
+  res.status(204).send();
 });
 
 export default app;
