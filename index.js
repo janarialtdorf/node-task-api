@@ -1,22 +1,21 @@
-import { getAllTasks, getTaskById, getCompletedTasks } from "./src/tasks.js";
+const jsObject = {
+  id: 2,
+  title: "Practise React state",
+  completed: false,
+};
 
-const tasks = [
-  { id: 1, title: "Õpi Node.js mooduleid", completed: true },
-  { id: 2, title: "Ehita Express API", completed: false },
-  { id: 3, title: "Kirjuta automaattestid", completed: false },
-];
+console.log("1. js objekt");
+console.log(jsObject);
+console.log("Tüüp:", typeof jsObject);
 
-console.log(" Kõik ülesanded ");
-console.log(getAllTasks(tasks));
+const jsonString = JSON.stringify(jsObject, null, 2); // JS objekt -> JSON string
 
-console.log("\n Ülesanne ID-ga 2 ");
-console.log(getTaskById(tasks, 2));
+console.log("\n 2. json stringify");
+console.log(jsonString);
+console.log("Tüüp:", typeof jsonString);
 
-console.log("\n Ülesanne olematu ID-ga (99) ");
-console.log(getTaskById(tasks, 99));
+const parsedObject = JSON.parse(jsonString); // JSON string -> parsed JS objekt
 
-console.log("\n Tehtud ülesanded ");
-console.log(getCompletedTasks(tasks));
-
-console.log("\n Test tühja massiiviga ");
-console.log(getAllTasks([]));
+console.log("\n 3. parsed js objekt");
+console.log(parsedObject.title); // Practise React state
+console.log("Tüüp:", typeof parsedObject);
