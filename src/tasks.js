@@ -1,23 +1,41 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const tasksFilePath = process.env.TASKS_FILE || "data/tasks.json";
-const filePath = path.resolve(tasksFilePath);
+const defaultFilePath = process.env.TASKS_FILE || "data/tasks.json";
 
-export async function readTasks() {
+export async function loadTasks(filePath = defaultFilePath) {
+  const resolvedPath = path.resolve(filePath);
+
   try {
-    const data = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(data);
+    const data = await fs.readFile(resolvedPath, "utf-8");
+
+    let tasks;
+    try {
+      tasks = JSON.parse(data);
+    } catch (parseError) {
+      throw new Error(
+        `Andmefail sisaldab vigast JSON-i: ${parseError.message}`,
+      );
+    }
+
+    if (!Array.isArray(tasks)) {
+      throw new Error("Andmefaili sisu peab olema massiiv.");
+    }
+
+    return tasks;
   } catch (error) {
     if (error.code === "ENOENT") {
-      // error no entry
-      await writeTasks([]);
       return [];
     }
     throw error;
   }
 }
 
+export async function readTasks() {
+  return loadTasks();
+}
+
 export async function writeTasks(tasks) {
-  await fs.writeFile(filePath, JSON.stringify(tasks, null, 2), "utf-8");
+  const resolvedPath = path.resolve(defaultFilePath);
+  await fs.writeFile(resolvedPath, JSON.stringify(tasks, null, 2), "utf-8");
 }
