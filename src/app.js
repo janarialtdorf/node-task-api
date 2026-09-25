@@ -3,6 +3,7 @@ import express from "express";
 import { getAllTasks, getTaskById } from "./tasks.js";
 
 const app = express();
+app.use(express.json());
 
 let tasks = [
   { id: 1, title: "Õpi Node.js mooduleid", completed: true },
@@ -43,6 +44,32 @@ app.get("/api/tasks/:id", (req, res) => {
   }
 
   res.json(task);
+});
+
+// POST /api/tasks
+app.post("/api/tasks", (req, res) => {
+  const { title } = req.body;
+
+  // Validation
+  if (!title || typeof title !== "string" || title.trim() === "") {
+    return res.status(400).json({ error: "Title cannot be empty" });
+  }
+
+  const trimmedTitle = title.trim();
+
+  // ID generation
+  const maxId = tasks.length > 0 ? Math.max(...tasks.map((t) => t.id)) : 0;
+  const newId = maxId + 1;
+
+  // New object
+  const newTask = {
+    id: newId,
+    title: trimmedTitle,
+    completed: false,
+  };
+
+  tasks.push(newTask);
+  res.status(201).json(newTask);
 });
 
 export default app;
