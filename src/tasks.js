@@ -1,15 +1,22 @@
-export function getAllTasks(tasks) {
-  if (!Array.isArray(tasks)) return [];
-  return [...tasks];
+import fs from "node:fs/promises";
+import path from "node:path";
+
+const filePath = path.resolve("data/tasks.json");
+
+export async function readTasks() {
+  try {
+    const data = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(data);
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      // error no entry
+      await writeTasks([]);
+      return [];
+    }
+    throw error;
+  }
 }
 
-export function getTaskById(tasks, id) {
-  if (!Array.isArray(tasks)) return undefined;
-  const taskId = Number(id);
-  return tasks.find((task) => task.id === taskId);
-}
-
-export function getCompletedTasks(tasks) {
-  if (!Array.isArray(tasks)) return [];
-  return tasks.filter((task) => task.completed === true);
+export async function writeTasks(tasks) {
+  await fs.writeFile(filePath, JSON.stringify(tasks, null, 2), "utf-8");
 }
